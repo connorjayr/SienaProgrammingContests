@@ -1,7 +1,5 @@
 package contest17;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class InTheYear2025 {
@@ -13,69 +11,58 @@ public class InTheYear2025 {
     int b = input.nextInt();
 
     for (int value = a; value <= b; ++value) {
-      List<Integer> cubes = new ArrayList<>();
-
-      // Perfect scubey years
-      int nextCube = 1;
-      while (getCubeSum(cubes) < value) {
-        cubes.add(nextCube++);
+      int n = 1;
+      while (getCubeSum(1, n, 0) < value) {
+        ++n;
+      }
+      if (getCubeSum(1, n, 0) == value) {
+        System.out.println(value + " Perfect\t1 " + n);
       }
 
-      if (getCubeSum(cubes) == value) {
-        System.out.println(value + " Perfect\t1 " + (nextCube - 1));
-      }
-
-      //Normal scubey years
-      List<Integer> normalCubes = new ArrayList<>(cubes);
-      int nextNormalCube = nextCube;
-      for (int m = 2; m <= nextNormalCube; ++m) {
-        List<Integer> currentNormalCubes = new ArrayList<>(normalCubes.subList(m - 1, normalCubes.size()));
-
-        while (value - getCubeSum(currentNormalCubes) >= Math.pow(nextNormalCube, 3)) {
-          currentNormalCubes.add(nextNormalCube);
-          normalCubes.add(nextNormalCube++);
+      int m = 2;
+      n = 2;
+      while (getCubeSum(m, n, 0) <= value) {
+        while (getCubeSum(m, n, 0) < value) {
+          ++n;
         }
-        if (getCubeSum(currentNormalCubes) == value) {
-          System.out.println(value + " Normal\t" + m + " " + (nextNormalCube - 1));
+        if (getCubeSum(m, n, 0) == value) {
+          System.out.println(value + " Normal\t" + m + " " + n);
+        }
+        n = ++m;
+        if (getCubeSum(n, n, 0) > value) {
+          break;
         }
       }
 
-      //Near scubey years
-      normalCubes = new ArrayList<>(cubes);
-      nextNormalCube = nextCube;
-      for (int m = 1; m < nextNormalCube; ++m) {
-        List<Integer> currentNormalCubes = new ArrayList<>(normalCubes.subList(m - 1, normalCubes.size()));
-
-        while (value - getCubeSum(currentNormalCubes) >= Math.pow(nextNormalCube, 3)) {
-          currentNormalCubes.add(nextNormalCube);
-          normalCubes.add(nextNormalCube++);
-        }
-
-        List<Integer> nearCubes = new ArrayList<>(currentNormalCubes);
-        int nextNearCube = nextCube;
-        for (int k = m + 1; k < nextNearCube; ++k) {
-          List<Integer> currentNearCubes = new ArrayList<>(nearCubes);
-          currentNearCubes.remove(k - m);
-
-          while (value - getCubeSum(currentNearCubes) >= Math.pow(nextNearCube, 3)) {
-            currentNearCubes.add(nextNearCube);
-            nearCubes.add(nextNearCube++);
+      m = 1;
+      int k = 2;
+      n = 3;
+      while (getCubeSum(m, n, k) <= value) {
+        while (getCubeSum(m, n, k) <= value) {
+          while (getCubeSum(m, n, k) < value && k > m) {
+            --k;
           }
-          if (getCubeSum(currentNearCubes) == value) {
-            System.out.println(value + " Near\t\t" + m + " " + (nextNearCube - 1) + " " + k);
+          if (getCubeSum(m, n, k) == value && k > m) {
+            System.out.println(value + " Near\t\t" + m + " " + n + " " + k);
           }
+          ++n;
+          k = n - 1;
         }
+        if (getCubeSum(m, n, k) == value && k > m) {
+          System.out.println(value + " Near\t\t" + m + " " + n + " " + k);
+        }
+        k = ++m + 1;
+        n = k + 1;
       }
-
     }
   }
 
-  public static int getCubeSum(List<Integer> cubes) {
+  public static int getCubeSum(int a, int b, int exclude) {
     int sum = 0;
-    for (int value : cubes) {
-      sum += Math.pow(value, 3);
+    for (int n = a; n <= b; ++n) {
+      sum += Math.pow(n, 3);
     }
-    return sum;
+    return sum - (int) Math.pow(exclude, 3);
   }
 
 }
